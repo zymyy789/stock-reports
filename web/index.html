@@ -1,71 +1,398 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <base href="./">
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="智能投资分析应用">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="智能投资分析">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-  <link rel="icon" type="image/png" href="favicon.png"/>
   <title>智能投资分析</title>
-  <link rel="manifest" href="manifest.json">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
       background: #f5f5f5;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #333;
     }
-    .loading {
-      position: fixed;
+    .header {
+      background: linear-gradient(135deg, #1976D2, #42A5F5);
+      color: white;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
       top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      z-index: 100;
+    }
+    .header h1 { font-size: 18px; font-weight: 500; }
+    .tabs {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: #f5f5f5;
-      z-index: 9999;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      position: sticky;
+      top: 50px;
+      z-index: 99;
     }
-    .loading.hidden {
-      display: none;
-    }
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid #e0e0e0;
-      border-top-color: #2196F3;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .loading-text {
-      margin-top: 16px;
+    .tab {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 13px;
       color: #666;
-      font-size: 14px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
     }
+    .tab.active { color: #1976D2; border-bottom-color: #1976D2; font-weight: 500; }
+    .tab-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+    .content { padding: 12px; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .index-card { display: flex; justify-content: space-between; align-items: center; }
+    .index-name { font-size: 14px; color: #666; }
+    .index-price { font-size: 18px; font-weight: 600; margin-top: 4px; }
+    .stock-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .stock-row:last-child { border-bottom: none; }
+    .stock-left { flex: 1; }
+    .stock-name { font-size: 15px; font-weight: 500; }
+    .stock-info { font-size: 12px; color: #999; margin-top: 4px; }
+    .stock-right { text-align: right; }
+    .stock-price { font-size: 15px; font-weight: 600; }
+    .stock-change { font-size: 13px; font-weight: 500; margin-top: 2px; }
+    .up { color: #F44336; }
+    .down { color: #4CAF50; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 6px; }
+    .tag-green { background: #E8F5E9; color: #388E3C; }
+    .tag-blue { background: #E3F2FD; color: #1976D2; }
+    .tag-orange { background: #FFF3E0; color: #F57C00; }
+    .section-title { font-size: 14px; font-weight: 500; color: #666; margin-bottom: 10px; padding-left: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .section-title .more { font-size: 12px; color: #1976D2; }
+    .empty { text-align: center; padding: 40px; color: #999; }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .btn {
+      background: #1976D2; color: white; border: none; padding: 12px 24px;
+      border-radius: 20px; font-size: 14px; cursor: pointer; margin: 8px;
+    }
+    .btn-outline { background: white; border: 1px solid #1976D2; color: #1976D2; }
+    .btn-small { padding: 6px 16px; font-size: 12px; }
+    /* 弹窗 */
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      background: white; border-radius: 16px; width: 90%; max-width: 360px;
+      padding: 20px; max-height: 80vh; overflow-y: auto;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-title { font-size: 18px; font-weight: 600; }
+    .modal-close { font-size: 24px; color: #999; cursor: pointer; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    .detail-label { color: #666; }
+    .detail-value { font-weight: 500; }
+    .detail-link { display: block; text-align: center; color: #1976D2; padding: 12px; margin-top: 12px; text-decoration: none; border-top: 1px solid #f0f0f0; }
+    /* 持仓 */
+    .position-card { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f0f0f0; }
+    .position-card:last-child { border-bottom: none; }
+    .position-info { flex: 1; }
+    .position-name { font-weight: 500; }
+    .position-hold { font-size: 12px; color: #666; margin-top: 4px; }
+    .position-right { text-align: right; }
+    .position-profit { font-weight: 600; }
+    .profit-up { color: #F44336; }
+    .profit-down { color: #4CAF50; }
+    .position-actions { display: flex; gap: 8px; margin-top: 8px; }
+    /* 表单 */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 14px; color: #666; margin-bottom: 6px; }
+    .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+    .form-btns { display: flex; gap: 12px; }
+    .form-btns .btn { flex: 1; margin: 0; }
   </style>
 </head>
 <body>
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
-    <div class="loading-text">加载中...</div>
+  <div class="header">
+    <h1>📊 智能投资分析</h1>
   </div>
+  
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(0)"><span class="tab-icon">📈</span>市场</div>
+    <div class="tab" onclick="switchTab(1)"><span class="tab-icon">📉</span>股票</div>
+    <div class="tab" onclick="switchTab(2)"><span class="tab-icon">💰</span>基金</div>
+    <div class="tab" onclick="switchTab(3)"><span class="tab-icon">💼</span>持仓</div>
+  </div>
+  
+  <div class="content">
+    <div id="page-0">
+      <div class="section-title">📊 指数行情</div>
+      <div id="indices"></div>
+    </div>
+    
+    <div id="page-1" class="hidden">
+      <div class="section-title">📉 个股行情 <span class="more">点击查看详情</span></div>
+      <div id="stocks"></div>
+    </div>
+    
+    <div id="page-2" class="hidden">
+      <div class="section-title">💰 基金估值 <span class="more">点击查看详情</span></div>
+      <div id="funds"></div>
+    </div>
+    
+    <div id="page-3" class="hidden">
+      <div id="portfolio-content"></div>
+    </div>
+  </div>
+
+  <!-- 详情弹窗 -->
+  <div id="detail-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title" id="detail-title"></span>
+        <span class="modal-close" onclick="closeModal()">×</span>
+      </div>
+      <div id="detail-body"></div>
+      <a id="detail-link" class="detail-link" href="" target="_blank">🔗 查看详细分析报告</a>
+    </div>
+  </div>
+
+  <!-- 交易弹窗 -->
+  <div id="trade-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title" id="trade-title"></span>
+        <span class="modal-close" onclick="closeTradeModal()">×</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">股票/基金代码</label>
+        <input class="form-input" id="trade-code" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">当前价格</label>
+        <input class="form-input" id="trade-price" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">数量（股/份）</label>
+        <input class="form-input" id="trade-amount" type="number" placeholder="请输入数量">
+      </div>
+      <div class="form-btns">
+        <button class="btn" onclick="doTrade('buy')">买入</button>
+        <button class="btn btn-outline" onclick="doTrade('sell')">卖出</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    window.addEventListener('flutter-first-frame', function() {
-      document.getElementById('loading').classList.add('hidden');
-    });
-    setTimeout(function() {
-      document.getElementById('loading').classList.add('hidden');
-    }, 10000);
+    // 数据
+    const indices = [
+      {name: '上证指数', price: 3995.00, change: 2.70},
+      {name: '沪深300', price: 4595.56, change: 3.49},
+      {name: '创业板指', price: 3347.61, change: 5.91},
+      {name: '恒生指数', price: 25893.02, change: 3.09}
+    ];
+    
+    const stocks = [
+      {name: '贵州茅台', code: '600519', price: 1465.02, change: 1.74, pe: 20.38, vol: 24500, amount: 156.8, desc: '中国白酒龙头企业，酱香型白酒代表'},
+      {name: '中国平安', code: '601318', price: 59.45, change: 4.87, pe: 7.99, vol: 89500, amount: 52.3, desc: '综合性金融保险集团'},
+      {name: '招商银行', code: '600036', price: 39.62, change: 1.62, pe: 6.65, vol: 32800, amount: 41.2, desc: '中国领先的商业银行'},
+      {name: '五粮液', code: '000858', price: 104.19, change: 1.05, pe: 14.22, vol: 18200, amount: 28.5, desc: '浓香型白酒龙头企业'},
+      {name: '美的集团', code: '000333', price: 76.73, change: 0.80, pe: 13.28, vol: 25600, amount: 38.9, desc: '家电制造龙头企业'},
+      {name: '兴业银行', code: '601166', price: 18.78, change: 1.35, pe: 5.13, vol: 45600, amount: 32.1, desc: '股份制商业银行，低PE'},
+      {name: '中信证券', code: '600030', price: 24.70, change: 3.26, pe: 12.17, vol: 38400, amount: 45.6, desc: '券商业龙头'},
+      {name: '伊利股份', code: '600887', price: 26.44, change: 0.42, pe: 20.88, vol: 19200, amount: 26.8, desc: '乳制品行业龙头'},
+      {name: '恒瑞医药', code: '600276', price: 57.45, change: 2.37, pe: 49.45, vol: 22100, amount: 35.2, desc: '创新药龙头企业'},
+      {name: '中国中免', code: '601888', price: 69.99, change: 2.96, pe: 40.55, vol: 15800, amount: 42.5, desc: '免税行业龙头'}
+    ];
+    
+    const funds = [
+      {name: '5G通信ETF', code: '515050', nav: 2.5435, change: 7.31, score: 95, type: '股票ETF', manager: '华夏基金', link: 'https://fund.eastmoney.com/515050.html'},
+      {name: 'AI ETF', code: '159819', nav: 1.5661, change: 7.13, score: 90, type: '股票ETF', manager: '易方达', link: 'https://fund.eastmoney.com/159819.html'},
+      {name: '科技ETF', code: '515000', nav: 1.0381, change: 6.67, score: 90, type: '股票ETF', manager: '华宝基金', link: 'https://fund.eastmoney.com/515000.html'},
+      {name: '科创50ETF', code: '588000', nav: 1.4253, change: 6.18, score: 90, type: '股票ETF', manager: '华夏基金', link: 'https://fund.eastmoney.com/588000.html'},
+      {name: '创业板ETF', code: '159915', nav: 3.3397, change: 5.91, score: 90, type: '股票ETF', manager: '易方达', link: 'https://fund.eastmoney.com/159915.html'},
+      {name: '中证500ETF', code: '510500', nav: 8.0123, change: 4.94, score: 95, type: '股票ETF', manager: '南方基金', link: 'https://fund.eastmoney.com/510500.html'},
+      {name: '证券ETF', code: '512880', nav: 1.0546, change: 3.96, score: 95, type: '股票ETF', manager: '国泰基金', link: 'https://fund.eastmoney.com/512880.html'},
+      {name: '沪深300ETF', code: '510300', nav: 4.6051, change: 3.49, score: 95, type: '股票ETF', manager: '华泰柏瑞', link: 'https://fund.eastmoney.com/510300.html'},
+      {name: '恒生ETF', code: '159920', nav: 1.5407, change: 2.94, score: 90, type: '港股ETF', manager: '华夏基金', link: 'https://fund.eastmoney.com/159920.html'},
+      {name: '上证50ETF', code: '510050', nav: 2.9806, change: 2.70, score: 95, type: '股票ETF', manager: '华夏基金', link: 'https://fund.eastmoney.com/510050.html'}
+    ];
+    
+    // 模拟持仓
+    let portfolio = [
+      {type: 'stock', name: '兴业银行', code: '601166', price: 18.78, amount: 1000, cost: 18.20},
+      {type: 'stock', name: '招商银行', code: '600036', price: 39.62, amount: 500, cost: 38.50},
+      {type: 'fund', name: '沪深300ETF', code: '510300', price: 4.6051, amount: 2000, cost: 4.20}
+    ];
+    
+    let cash = 50000; // 模拟现金余额
+    let currentItem = null;
+    
+    function switchTab(idx) {
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+      document.querySelectorAll('[id^="page-"]').forEach((p, i) => p.classList.toggle('hidden', i !== idx));
+      if (idx === 3) renderPortfolio();
+    }
+    
+    function formatNum(n, d=2) { return (n||0).toFixed(d); }
+    
+    function renderIndices() {
+      document.getElementById('indices').innerHTML = indices.map(i => {
+        const up = i.change >= 0;
+        return '<div class="card index-card"><div><div class="index-name">'+i.name+'</div><div class="index-price">¥'+formatNum(i.price)+'</div></div><div class="'+(up?'up':'down')+'" style="font-size:16px;font-weight:600;">'+(up?'▲':'▼')+formatNum(i.change)+'%</div></div>';
+      }).join('');
+    }
+    
+    function renderStocks() {
+      document.getElementById('stocks').innerHTML = stocks.map(s => {
+        const up = s.change >= 0;
+        const peTag = s.pe<10?'<span class="tag tag-green">低估</span>':s.pe<20?'<span class="tag tag-blue">正常</span>':'<span class="tag tag-orange">偏高</span>';
+        return '<div class="card"><div class="stock-row" onclick="showStockDetail('+stocks.indexOf(s)+')"><div class="stock-left"><div class="stock-name">'+s.name+'</div><div class="stock-info">'+s.code+' · PE:'+formatNum(s.pe)+' '+peTag+'</div></div><div class="stock-right"><div class="stock-price">¥'+formatNum(s.price)+'</div><div class="stock-change '+(up?'up':'down')+'">'+(up?'+':'')+formatNum(s.change)+'%</div></div></div></div>';
+      }).join('');
+    }
+    
+    function renderFunds() {
+      document.getElementById('funds').innerHTML = funds.map(f => {
+        const up = f.change >= 0;
+        const scoreTag = f.score>=90?'<span class="tag tag-green">优</span>':'<span class="tag tag-blue">良</span>';
+        return '<div class="card"><div class="stock-row" onclick="showFundDetail('+funds.indexOf(f)+')"><div class="stock-left"><div class="stock-name">'+f.name+'</div><div class="stock-info">'+f.code+' · 净值:'+formatNum(f.nav,4)+' '+scoreTag+'</div></div><div class="stock-right"><div class="stock-change '+(up?'up':'down')+'" style="font-size:16px;">'+(up?'+':'')+formatNum(f.change)+'%</div></div></div></div>';
+      }).join('');
+    }
+    
+    function renderPortfolio() {
+      const el = document.getElementById('portfolio-content');
+      let html = '<div class="section-title">💼 我的持仓 <span style="font-weight:normal;color:#666;">现金: ¥'+formatNum(cash)+'</span></div><div class="card">';
+      
+      if (portfolio.length === 0) {
+        html += '<div class="empty"><div class="empty-icon">💼</div><div>暂无持仓</div><div style="color:#ccc;margin-top:8px;">点击下方按钮模拟买入</div>';
+      } else {
+        portfolio.forEach((p, i) => {
+          const profit = (p.price - p.cost) * p.amount;
+          const profitPct = ((p.price - p.cost) / p.cost * 100);
+          const up = profit >= 0;
+          html += '<div class="position-card"><div class="position-info"><div class="position-name">'+p.name+'</div><div class="position-hold">'+p.code+' · '+p.amount+'股/份 · 成本:¥'+formatNum(p.cost)+'</div></div><div class="position-right"><div class="position-profit '+(up?'profit-up':'profit-down')+'">'+(up?'+':'')+formatNum(profit)+' ('+formatNum(profitPct)+'%)</div><div class="position-actions"><button class="btn btn-small btn-outline" onclick="openTradeModal('+i+')">交易</button></div></div></div>';
+        });
+      }
+      
+      html += '</div><div style="text-align:center;margin-top:16px;"><button class="btn" onclick="showTradeForm()">+ 添加模拟持仓</button></div>';
+      el.innerHTML = html;
+    }
+    
+    // 详情
+    function showStockDetail(idx) {
+      const s = stocks[idx];
+      const up = s.change >= 0;
+      document.getElementById('detail-title').textContent = s.name;
+      document.getElementById('detail-body').innerHTML = 
+        '<div class="detail-row"><span class="detail-label">股票代码</span><span class="detail-value">'+s.code+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">当前价格</span><span class="detail-value">¥'+formatNum(s.price)+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">涨跌幅</span><span class="detail-value '+(up?'up':'down')+'">'+(up?'+':'')+formatNum(s.change)+'%</span></div>'+
+        '<div class="detail-row"><span class="detail-label">市盈率(PE)</span><span class="detail-value">'+formatNum(s.pe)+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">成交量</span><span class="detail-value">'+formatNum(s.vol/10000)+'万手</span></div>'+
+        '<div class="detail-row"><span class="detail-label">成交额</span><span class="detail-value">'+formatNum(s.amount)+'亿</span></div>'+
+        '<div class="detail-row"><span class="detail-label">公司简介</span><span class="detail-value" style="font-size:13px;">'+s.desc+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">估值状态</span><span class="detail-value">'+(s.pe<10?'🔥 低估':s.pe<20?'✅ 正常':'⚠️ 偏高')+'</span></div>';
+      document.getElementById('detail-link').href = 'https://quote.eastmoney.com/sh'+s.code+'.html';
+      document.getElementById('detail-modal').classList.add('show');
+    }
+    
+    function showFundDetail(idx) {
+      const f = funds[idx];
+      const up = f.change >= 0;
+      document.getElementById('detail-title').textContent = f.name;
+      document.getElementById('detail-body').innerHTML = 
+        '<div class="detail-row"><span class="detail-label">基金代码</span><span class="detail-value">'+f.code+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">基金类型</span><span class="detail-value">'+f.type+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">基金公司</span><span class="detail-value">'+f.manager+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">单位净值</span><span class="detail-value">'+formatNum(f.nav,4)+'</span></div>'+
+        '<div class="detail-row"><span class="detail-label">估值涨跌</span><span class="detail-value '+(up?'up':'down')+'">'+(up?'+':'')+formatNum(f.change)+'%</span></div>'+
+        '<div class="detail-row"><span class="detail-label">综合评分</span><span class="detail-value">'+f.score+'分</span></div>';
+      document.getElementById('detail-link').href = f.link;
+      document.getElementById('detail-modal').classList.add('show');
+    }
+    
+    function closeModal() {
+      document.getElementById('detail-modal').classList.remove('show');
+    }
+    
+    // 交易
+    function openTradeModal(idx) {
+      const p = portfolio[idx];
+      currentItem = {idx: idx, ...p};
+      document.getElementById('trade-title').textContent = p.name + ' - 交易';
+      document.getElementById('trade-code').value = p.code;
+      document.getElementById('trade-price').value = '¥' + formatNum(p.price);
+      document.getElementById('trade-amount').value = '';
+      document.getElementById('trade-modal').classList.add('show');
+    }
+    
+    function showTradeForm() {
+      currentItem = null;
+      document.getElementById('trade-title').textContent = '新建模拟持仓';
+      document.getElementById('trade-code').value = '';
+      document.getElementById('trade-price').value = '';
+      document.getElementById('trade-amount').value = '';
+      document.getElementById('trade-modal').classList.add('show');
+    }
+    
+    function closeTradeModal() {
+      document.getElementById('trade-modal').classList.remove('show');
+    }
+    
+    function doTrade(action) {
+      const amount = parseInt(document.getElementById('trade-amount').value);
+      if (!amount || amount <= 0) { alert('请输入有效数量'); return; }
+      
+      if (currentItem) {
+        // 现有持仓交易
+        const idx = currentItem.idx;
+        if (action === 'sell') {
+          if (amount > portfolio[idx].amount) { alert('持仓不足'); return; }
+          const profit = (portfolio[idx].price - portfolio[idx].cost) * amount;
+          cash += portfolio[idx].price * amount;
+          portfolio[idx].amount -= amount;
+          if (portfolio[idx].amount === 0) portfolio.splice(idx, 1);
+          alert('卖出成功！收益: ¥' + formatNum(profit));
+        } else {
+          const cost = portfolio[idx].price * amount;
+          if (cost > cash) { alert('现金不足'); return; }
+          cash -= cost;
+          const newAmount = portfolio[idx].amount + amount;
+          const newCost = (portfolio[idx].cost * portfolio[idx].amount + cost) / newAmount;
+          portfolio[idx].amount = newAmount;
+          portfolio[idx].cost = newCost;
+          alert('买入成功！');
+        }
+      } else {
+        // 新建持仓
+        const code = document.getElementById('trade-code').value.trim();
+        if (!code) { alert('请输入代码'); return; }
+        // 简单匹配
+        let item = stocks.find(s => s.code === code) || funds.find(f => f.code === code);
+        if (!item) { alert('未找到对应股票/基金'); return; }
+        const cost = item.price * amount;
+        if (cost > cash) { alert('现金不足'); return; }
+        cash -= cost;
+        portfolio.push({
+          type: item.code.startsWith('5') || item.code.startsWith('1') ? 'fund' : 'stock',
+          name: item.name,
+          code: item.code,
+          price: item.price,
+          amount: amount,
+          cost: item.price
+        });
+        alert('买入成功！');
+      }
+      closeTradeModal();
+      renderPortfolio();
+    }
+    
+    // 初始化
+    renderIndices();
+    renderStocks();
+    renderFunds();
   </script>
-  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
