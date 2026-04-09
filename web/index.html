@@ -16,7 +16,7 @@
     .tab.active { color: #1976D2; border-bottom-color: #1976D2; }
     .content { flex: 1; overflow-y: auto; padding: 12px; }
     .card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    .item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
     .item:last-child { border-bottom: none; }
     .item-left { flex: 1; }
     .item-name { font-size: 14px; font-weight: 500; }
@@ -30,29 +30,38 @@
     .tag-green { background: #E8F5E9; color: #388E3C; }
     .tag-blue { background: #E3F2FD; color: #1976D2; }
     .tag-orange { background: #FFF3E0; color: #F57C00; }
-    .tag-red { background: #FFEBEE; color: #D32F2F; }
     .tag-buy { background: #FFEBEE; color: #D32F2F; }
-    .tag-sell { background: #E8F5E9; color: #388E3C; }
     .section-title { font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 500; }
     .summary { background: linear-gradient(135deg, #1976D2, #42A5F5); color: white; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-    .summary-label { font-size: 11px; opacity: 0.9; }
-    .summary-value { font-size: 20px; font-weight: 600; margin-top: 3px; }
-    .summary-detail { font-size: 11px; margin-top: 4px; opacity: 0.85; }
+    .summary-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 12px; }
+    .summary-label { opacity: 0.85; }
+    .summary-val { font-weight: 600; }
     .btn { background: #1976D2; color: white; border: none; padding: 10px 18px; border-radius: 20px; font-size: 13px; cursor: pointer; }
     .btn-outline { background: white; color: #1976D2; border: 1px solid #1976D2; }
     .text-center { text-align: center; }
     .mt-10 { margin-top: 10px; }
-    /* 弹窗 */
+    /* 持仓行样式 */
+    .pos-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .pos-row:last-child { border-bottom: none; }
+    .pos-name { width: 90px; }
+    .pos-name-text { font-size: 13px; font-weight: 600; }
+    .pos-name-code { font-size: 10px; color: #999; }
+    .pos-market { width: 75px; text-align: right; }
+    .pos-market-val { font-size: 13px; font-weight: 600; }
+    .pos-market-info { font-size: 10px; color: #999; }
+    .pos-price { width: 80px; text-align: right; }
+    .pos-price-val { font-size: 13px; }
+    .pos-price-info { font-size: 10px; color: #999; }
+    .pos-profit { width: 70px; text-align: right; }
+    .pos-profit-val { font-size: 13px; font-weight: 600; }
+    .pos-profit-pct { font-size: 10px; }
+    /* 交易弹窗 */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
     .modal.show { display: block; }
-    .modal-content { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 16px 16px 0 0; max-height: 85vh; overflow-y: auto; }
+    .modal-content { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 16px 16px 0 0; }
     .modal-header { display: flex; justify-content: space-between; padding: 14px; border-bottom: 1px solid #eee; }
     .modal-title { font-size: 16px; font-weight: 600; }
     .modal-close { font-size: 22px; color: #999; cursor: pointer; width: 28px; height: 28px; text-align: center; line-height: 28px; }
-    .detail-item { display: flex; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #f5f5f5; }
-    .detail-label { color: #666; font-size: 13px; }
-    .detail-value { font-weight: 500; font-size: 13px; }
-    .detail-link { display: block; text-align: center; padding: 12px; color: #1976D2; text-decoration: none; font-size: 13px; }
     .form-item { padding: 0 14px 14px; }
     .form-label { font-size: 12px; color: #666; margin-bottom: 5px; display: block; }
     .form-input { width: 100%; padding: 9px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; }
@@ -60,7 +69,7 @@
     .form-btns .btn { flex: 1; }
     .trade-record { padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
     .trade-record:last-child { border-bottom: none; }
-    .trade-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .trade-header { display: flex; justify-content: space-between; margin-bottom: 3px; }
     .trade-action { font-size: 13px; font-weight: 600; }
     .trade-time { font-size: 11px; color: #999; }
     .trade-detail { font-size: 11px; color: #666; }
@@ -82,19 +91,6 @@
       <div id="page-2" style="display:none;"></div>
       <div id="page-3" style="display:none;"></div>
       <div id="page-4" style="display:none;"></div>
-    </div>
-  </div>
-
-  <!-- 详情弹窗 -->
-  <div id="detail-modal" class="modal">
-    <div style="position:fixed;inset:0;cursor:pointer;" onclick="closeModal()"></div>
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="modal-title" id="detail-title"></span>
-        <span class="modal-close" onclick="closeModal()">×</span>
-      </div>
-      <div id="detail-body"></div>
-      <a id="detail-link" class="detail-link" href="#" target="_blank">🔗 查看详情</a>
     </div>
   </div>
 
@@ -122,7 +118,7 @@
   </div>
 
 <script>
-// 数据（2026-04-09 实时）
+// 股票数据
 const stocks = [
   {name:'兴业银行',code:'601166',price:18.61,pe:5.08,change:-0.91,desc:'股份制商业银行'},
   {name:'招商银行',code:'600036',price:39.30,pe:6.60,change:-0.81,desc:'中国领先商业银行'},
@@ -155,7 +151,7 @@ const indices = [
   {name:'创业板指',price:3320.38,change:-0.81}
 ];
 
-// 交易历史（来自真实系统）
+// 交易历史
 const tradeHistory = [
   {action:'buy',name:'兴业银行',code:'601166',price:18.66,amount:600,total:11196,date:'2026-04-09 09:46',reason:'PE=5.1 低估'},
   {action:'buy',name:'招商银行',code:'600036',price:39.27,amount:300,total:11781,date:'2026-04-09 09:46',reason:'PE=6.6 低估'},
@@ -176,16 +172,16 @@ let portfolio = {
   ]
 };
 
-// 计算盈亏
 portfolio.positions.forEach(p => {
-  p.profit = ((p.price - p.cost) * p.amount).toFixed(0);
-  p.profit_pct = ((p.price - p.cost) / p.cost * 100).toFixed(2);
+  p.marketVal = p.price * p.amount;
+  p.profit = (p.price - p.cost) * p.amount;
+  p.profitPct = ((p.price - p.cost) / p.cost * 100).toFixed(2);
 });
-const totalValue = portfolio.positions.reduce((s,p) => s + p.price * p.amount, 0);
+const totalMarket = portfolio.positions.reduce((s,p) => s + p.marketVal, 0);
 const totalCost = portfolio.positions.reduce((s,p) => s + p.cost * p.amount, 0);
-const totalProfit = totalValue - totalCost;
+const totalProfit = totalMarket - totalCost;
 const totalProfitPct = (totalProfit / totalCost * 100).toFixed(2);
-const totalAssets = portfolio.cash + totalValue;
+const totalAssets = portfolio.cash + totalMarket;
 
 let currentPage = 0;
 
@@ -197,51 +193,77 @@ function switchTab(idx) {
   if(idx===4) renderHistory();
 }
 
+// 走势图链接（东方财富K线图）
+function chartUrl(code) {
+  const prefix = code.startsWith('0') || code.startsWith('3') ? 'sz' : 'sh';
+  return 'https://quote.eastmoney.com/' + prefix + code + '.html';
+}
+
 function renderPage0() {
-  // 市场+信号
   let html = '<div class="section-title">📊 指数行情</div><div class="card">';
   indices.forEach(i => {
     const up = i.change>=0;
-    html += '<div class="item"><div class="item-left"><div class="item-name">'+i.name+'</div></div><div class="item-right"><div class="item-price">'+i.price.toFixed(2)+'</div><div class="item-change '+(up?'up':'down')+'">'+(up?'+':'')+i.change.toFixed(2)+'%</div></div></div>';
+    html += '<div class="item" onclick="goChart(\''+(i.name==='上证指数'?'000001':i.name==='沪深300'?'000300':'399006')+'\')"><div class="item-left"><div class="item-name">'+i.name+'</div></div><div class="item-right"><div class="item-price">'+i.price.toFixed(2)+'</div><div class="item-change '+(up?'up':'down')+'">'+(up?'+':'')+i.change.toFixed(2)+'%</div></div></div>';
   });
   html += '</div><div class="section-title mt-10">📥 买入信号</div><div class="card">';
   const sigs = [{name:'五粮液',code:'000858',pe:14.01},{name:'美的集团',code:'000333',pe:13.25}];
   sigs.forEach(s => {
-    html += '<div class="item" onclick="showStock(\''+s.code+'\')"><div class="item-left"><div class="item-name">'+s.name+' <span class="tag tag-green">买入</span></div><div class="item-info">PE:'+s.pe+' · 偏低建议买入</div></div></div>';
+    html += '<div class="item" onclick="goChart(\''+s.code+'\')"><div class="item-left"><div class="item-name">'+s.name+' <span class="tag tag-green">买入</span></div><div class="item-info">PE:'+s.pe+' · 偏低建议买入</div></div><div class="item-right"><span style="font-size:11px;color:#1976D2">→ 走势图</span></div></div>';
   });
   html += '</div>';
   document.getElementById('page-0').innerHTML = html;
 }
 
 function renderPage1() {
-  let html = '<div class="section-title">📉 个股行情（点击查看）</div><div class="card">';
+  let html = '<div class="section-title">📉 个股行情（点击查看走势图）</div><div class="card">';
   stocks.forEach(s => {
     const up = s.change>=0;
     const tag = s.pe<10?'<span class="tag tag-green">低估</span>':s.pe<20?'<span class="tag tag-blue">正常</span>':'<span class="tag tag-orange">偏高</span>';
-    html += '<div class="item" onclick="showStock(\''+s.code+'\')"><div class="item-left"><div class="item-name">'+s.name+' '+tag+'</div><div class="item-info">'+s.code+' · PE:'+s.pe+'</div></div><div class="item-right"><div class="item-price">¥'+s.price.toFixed(2)+'</div><div class="item-change '+(up?'up':'down')+'">'+(up?'+':'')+s.change.toFixed(2)+'%</div></div></div>';
+    html += '<div class="item" onclick="goChart(\''+s.code+'\')"><div class="item-left"><div class="item-name">'+s.name+' '+tag+'</div><div class="item-info">'+s.code+' · PE:'+s.pe+'</div></div><div class="item-right"><div class="item-price">¥'+s.price.toFixed(2)+'</div><div class="item-change '+(up?'up':'down')+'">'+(up?'+':'')+s.change.toFixed(2)+'%</div></div></div>';
   });
   html += '</div>';
   document.getElementById('page-1').innerHTML = html;
 }
 
 function renderPage2() {
-  let html = '<div class="section-title">💰 基金估值（点击查看）</div><div class="card">';
+  let html = '<div class="section-title">💰 基金估值（点击查看详情）</div><div class="card">';
   funds.forEach(f => {
     const up = f.change>=0;
-    html += '<div class="item" onclick="showFund(\''+f.code+'\')"><div class="item-left"><div class="item-name">'+f.name+'</div><div class="item-info">'+f.code+' · '+f.manager+'</div></div><div class="item-right"><div class="item-price">净值:'+f.nav.toFixed(4)+'</div><div class="item-change '+(up?'up':'down')+'">'+(up?'+':'')+f.change.toFixed(2)+'%</div></div></div>';
+    html += '<div class="item" onclick="goChart(\''+f.code+'\')"><div class="item-left"><div class="item-name">'+f.name+'</div><div class="item-info">'+f.code+' · '+f.manager+'</div></div><div class="item-right"><div class="item-price">净值:'+f.nav.toFixed(4)+'</div><div class="item-change '+(up?'up':'down')+'">'+(up?'+':'')+f.change.toFixed(2)+'%</div></div></div>';
   });
   html += '</div>';
   document.getElementById('page-2').innerHTML = html;
 }
 
 function renderPortfolio() {
-  let html = '<div class="summary"><div class="summary-label">总资产</div><div class="summary-value">¥'+totalAssets.toFixed(0)+'</div><div class="summary-detail">盈亏 '+(totalProfit>=0?'+':'')+'¥'+totalProfit.toFixed(0)+' ('+totalProfitPct+'%) · 现金 ¥'+portfolio.cash.toFixed(0)+'</div></div>';
-  html += '<div class="section-title">💼 持仓明细</div><div class="card">';
+  const up = totalProfit>=0;
+  let html = '<div class="summary">';
+  html += '<div style="font-size:12px;opacity:0.9">总资产</div>';
+  html += '<div style="font-size:22px;font-weight:600;margin-top:3px">¥'+totalAssets.toFixed(0)+'</div>';
+  html += '<div class="summary-row"><span class="summary-label">今日盈亏</span><span class="summary-val">'+(up?'+':'')+'¥'+totalProfit.toFixed(0)+' ('+totalProfitPct+'%)</span></div>';
+  html += '<div class="summary-row"><span class="summary-label">持仓市值</span><span>¥'+totalMarket.toFixed(0)+'</span></div>';
+  html += '<div class="summary-row"><span class="summary-label">可用现金</span><span>¥'+portfolio.cash.toFixed(0)+'</span></div>';
+  html += '</div>';
+  
+  html += '<div class="card" style="padding:6px 12px">';
+  html += '<div style="display:flex;font-size:10px;color:#999;padding:6px 0;border-bottom:1px solid #f0f0f0">';
+  html += '<div style="width:90px">名称/代码</div>';
+  html += '<div style="width:75px;text-align:right">持仓/市值</div>';
+  html += '<div style="width:80px;text-align:right">现价/成本</div>';
+  html += '<div style="width:70px;text-align:right">盈亏</div></div>';
+  
   portfolio.positions.forEach(p => {
-    const up = parseFloat(p.profit)>=0;
-    html += '<div class="item"><div class="item-left"><div class="item-name">'+p.name+'</div><div class="item-info">'+p.code+' · '+p.amount+'股 · 成本¥'+p.cost.toFixed(2)+'</div></div><div class="item-right"><div class="item-change '+(up?'up':'down')+'">'+(up?'+':'')+'¥'+p.profit+' ('+p.profit_pct+'%)</div></div></div>';
+    const pu = parseFloat(p.profit)>=0;
+    html += '<div class="pos-row" onclick="goChart(\''+p.code+'\')">';
+    html += '<div class="pos-name"><div class="pos-name-text">'+p.name+'</div><div class="pos-name-code">'+p.code+'</div></div>';
+    html += '<div class="pos-market"><div class="pos-market-val">'+p.amount+'股</div><div class="pos-market-info">¥'+p.marketVal.toFixed(0)+'</div></div>';
+    html += '<div class="pos-price"><div class="pos-price-val">¥'+p.price.toFixed(2)+'</div><div class="pos-price-info">¥'+p.cost.toFixed(2)+'</div></div>';
+    html += '<div class="pos-profit"><div class="pos-profit-val '+(pu?'down':'up')+'">'+(pu?'+':'')+'¥'+p.profit.toFixed(0)+'</div><div class="pos-profit-pct '+(pu?'down':'up')+'">'+(pu?'+':'')+p.profitPct+'%</div></div>';
+    html += '</div>';
   });
-  html += '</div><div class="text-center mt-10"><button class="btn" onclick="openTrade()">+ 模拟交易</button></div>';
+  html += '</div>';
+  
+  html += '<div class="text-center mt-10"><button class="btn" onclick="openTrade()">+ 模拟交易</button></div>';
   document.getElementById('page-3').innerHTML = html;
 }
 
@@ -255,37 +277,11 @@ function renderHistory() {
   document.getElementById('page-4').innerHTML = html;
 }
 
-function showStock(code) {
-  const s = stocks.find(x=>x.code===code);
-  if(!s) return;
-  const up = s.change>=0;
-  document.getElementById('detail-title').textContent = s.name;
-  document.getElementById('detail-body').innerHTML = 
-    '<div class="detail-item"><span class="detail-label">代码</span><span class="detail-value">'+s.code+'</span></div>'+
-    '<div class="detail-item"><span class="detail-label">价格</span><span class="detail-value">¥'+s.price.toFixed(2)+'</span></div>'+
-    '<div class="detail-item"><span class="detail-label">涨跌</span><span class="detail-value '+(up?'up':'down')+'">'+(up?'+':'')+s.change.toFixed(2)+'%</span></div>'+
-    '<div class="detail-item"><span class="detail-label">市盈率</span><span class="detail-value">'+s.pe+'</span></div>'+
-    '<div class="detail-item"><span class="detail-label">估值</span><span class="detail-value">'+(s.pe<10?'🔥 低估':s.pe<20?'✅ 正常':'⚠️ 偏高')+'</span></div>'+
-    '<div class="detail-item"><span class="detail-label">简介</span><span class="detail-value" style="font-size:11px">'+s.desc+'</span></div>';
-  document.getElementById('detail-link').href = 'https://quote.eastmoney.com/'+(s.code.startsWith('0')?'sz':'sh')+s.code+'.html';
-  document.getElementById('detail-modal').classList.add('show');
+function goChart(code) {
+  const prefix = code.startsWith('0') || code.startsWith('3') ? 'sz' : 'sh';
+  window.location.href = 'https://quote.eastmoney.com/' + prefix + code + '.html';
 }
 
-function showFund(code) {
-  const f = funds.find(x=>x.code===code);
-  if(!f) return;
-  const up = f.change>=0;
-  document.getElementById('detail-title').textContent = f.name;
-  document.getElementById('detail-body').innerHTML = 
-    '<div class="detail-item"><span class="detail-label">代码</span><span class="detail-value">'+f.code+'</span></div>'+
-    '<div class="detail-item"><span class="detail-label">管理人</span><span class="detail-value">'+f.manager+'</span></div>'+
-    '<div class="detail-item"><span class="detail-label">净值</span><span class="detail-value">'+f.nav.toFixed(4)+'</span></div>'+
-    '<div class="detail-item"><span class="detail-label">涨跌</span><span class="detail-value '+(up?'up':'down')+'">'+(up?'+':'')+f.change.toFixed(2)+'%</span></div>';
-  document.getElementById('detail-link').href = 'https://fund.eastmoney.com/'+f.code+'.html';
-  document.getElementById('detail-modal').classList.add('show');
-}
-
-function closeModal() { document.getElementById('detail-modal').classList.remove('show'); }
 function closeTrade() { document.getElementById('trade-modal').classList.remove('show'); }
 function openTrade() { document.getElementById('trade-modal').classList.add('show'); }
 
@@ -301,18 +297,14 @@ function executeBuy() {
   if(pos) {
     const na = pos.amount+amount;
     pos.cost = (pos.cost*pos.amount+cost)/na;
-    pos.amount = na;
-    pos.price = s.price;
+    pos.amount = na; pos.price = s.price;
   } else {
     portfolio.positions.push({code, name:s.name, cost:s.price, price:s.price, amount});
   }
   portfolio.cash -= cost;
-  // 添加交易记录
+  portfolio.positions.forEach(p => { p.marketVal = p.price*p.amount; p.profit = (p.price-p.cost)*p.amount; p.profitPct = ((p.price-p.cost)/p.cost*100).toFixed(2); });
   tradeHistory.unshift({action:'buy',name:s.name,code,price:s.price,amount,total:cost,date:new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'}).replace(/\//g,'-'),reason:'手动买入'});
-  closeTrade();
-  // 更新计算
-  portfolio.positions.forEach(p => { p.profit = ((p.price-p.cost)*p.amount).toFixed(0); p.profit_pct = ((p.price-p.cost)/p.cost*100).toFixed(2); });
-  alert('买入成功: '+s.name+' × '+amount);
+  closeTrade(); alert('买入成功: '+s.name+' × '+amount);
   if(currentPage===3) renderPortfolio();
 }
 
@@ -327,12 +319,9 @@ function executeSell() {
   portfolio.cash += s.price*amount;
   pos.amount -= amount;
   if(pos.amount===0) portfolio.positions = portfolio.positions.filter(x=>x.code!==code);
-  // 添加交易记录
+  portfolio.positions.forEach(p => { p.marketVal = p.price*p.amount; p.profit = (p.price-p.cost)*p.amount; p.profitPct = ((p.price-p.cost)/p.cost*100).toFixed(2); });
   tradeHistory.unshift({action:'sell',name:pos.name,code,price:s.price,amount,total:s.price*amount,date:new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'}).replace(/\//g,'-'),reason:'手动卖出'});
-  closeTrade();
-  // 更新计算
-  portfolio.positions.forEach(p => { p.profit = ((p.price-p.cost)*p.amount).toFixed(0); p.profit_pct = ((p.price-p.cost)/p.cost*100).toFixed(2); });
-  alert('卖出成功: '+pos.name+' × '+amount);
+  closeTrade(); alert('卖出成功: '+pos.name+' × '+amount);
   if(currentPage===3) renderPortfolio();
 }
 
