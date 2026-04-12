@@ -1,0 +1,52 @@
+{
+  "source": "银行螺丝钉（基金投资专家，指数基金定投倡导者）",
+  "core_principles": {
+    "低估定投": {
+      "low_buy": "PE/PB处于历史30%分位以下 → 加大买入",
+      "normal_hold": "PE/PB处于30%-70%分位 → 正常持有",
+      "high_sell": "PE/PB处于70%以上分位 → 逐步卖出",
+      "formula": "买入金额 = 基础金额 × (正常PE/当前PE)"
+    },
+    "长期持有": {
+      "rationale": "股市长期向上（国运+经济增长）",
+      "time_horizon": "持有3-5年以上收益更稳定",
+      "cost_of_trading": "频繁交易损耗收益（摩擦成本+税收）"
+    },
+    "高股息策略": {
+      "dividend_yield": "股息率>4%视为高股息",
+      "benefit": "提供现金流，下跌有限",
+      "best_sectors": "银行/电力/地产/传统消费"
+    }
+  },
+  "selection_criteria": {
+    "index_fund": {
+      "跟踪误差": "<0.3%为优秀",
+      "费率": "<0.5%/年为低成本",
+      "规模": ">2亿避免清盘风险",
+      "recommended": [
+        "沪深300",
+        "中证500",
+        "红利指数",
+        "基本面指数"
+      ]
+    },
+    "stock": {
+      "ROE": ">15%为优质公司",
+      "profit_stability": "连续5年盈利",
+      "debt_ratio": "<60%（金融除外）",
+      "cash_flow": "经营现金流 > 净利润"
+    }
+  },
+  "portfolio_management": {
+    "rebalancing": {
+      "定期": "每年1次",
+      "阈值": "单资产偏离目标>10%时触发",
+      "方法": "卖出超配资产，买入低配资产"
+    },
+    "position_sizing": {
+      "max_single": "单只股票不超过20%",
+      "max_industry": "单一行业不超过30%",
+      "cash_reserve": "保留10-20%现金应对极端情况"
+    }
+  }
+}
