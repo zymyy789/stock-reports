@@ -1,0 +1,67 @@
+{
+  "date": "2026-04-05",
+  "market": {
+    "shanghai": {
+      "code": "000001",
+      "price": 3240.0,
+      "change": 9.72,
+      "change_pct": 0.3
+    },
+    "shenzhen": {
+      "code": "399001",
+      "price": 11200.0,
+      "change": 56.0,
+      "change_pct": 0.5
+    }
+  },
+  "recommendations": [
+    {
+      "code": "601166",
+      "name": "兴业银行",
+      "price": 18.0,
+      "change_pct": 0.1,
+      "pe": 5.0,
+      "pb": 0.6,
+      "dividend": 5.0,
+      "valuation_score": 89.73333333333333,
+      "recommend_reason": "PE=5.0偏低，PB=0.60偏低，股息率5.0%"
+    },
+    {
+      "code": "600036",
+      "name": "招商银行",
+      "price": 35.0,
+      "change_pct": 0.2,
+      "pe": 8.0,
+      "pb": 1.1,
+      "dividend": 4.0,
+      "valuation_score": 82.73333333333333,
+      "recommend_reason": "PE=8.0偏低，PB=1.10偏低，股息率4.0%"
+    },
+    {
+      "code": "601318",
+      "name": "中国平安",
+      "price": 45.0,
+      "change_pct": -0.3,
+      "pe": 12.0,
+      "pb": 1.2,
+      "dividend": 3.5,
+      "valuation_score": 76.8,
+      "recommend_reason": "PE=12.0偏低，PB=1.20偏低，股息率3.5%"
+    },
+    {
+      "code": "000858",
+      "name": "五粮液",
+      "price": 150.0,
+      "change_pct": -0.5,
+      "pe": 15.0,
+      "pb": 2.5,
+      "dividend": 2.8,
+      "valuation_score": 65.0,
+      "recommend_reason": "综合估值偏低"
+    }
+  ],
+  "portfolio": {
+    "value": 100000,
+    "positions": []
+  }
+}
