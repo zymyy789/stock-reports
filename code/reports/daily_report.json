@@ -1,0 +1,111 @@
+{
+  "date": "2026-04-09",
+  "market": [
+    {
+      "name": "上证指数",
+      "price": 3963.57,
+      "change": -0.79
+    },
+    {
+      "name": "沪深300",
+      "price": 4563.5,
+      "change": -0.7
+    },
+    {
+      "name": "创业板指",
+      "price": 3320.38,
+      "change": -0.81
+    }
+  ],
+  "portfolio": {
+    "cash": 55463.0,
+    "total_cost": 44537.0,
+    "total_value": 44560.0,
+    "total_profit": 23.0,
+    "total_profit_pct": 0.05164245458831983,
+    "total_assets": 100023.0,
+    "positions": [
+      {
+        "code": "601166",
+        "name": "兴业银行",
+        "type": "stock",
+        "cost_price": 18.66,
+        "current_price": 18.61,
+        "amount": 600,
+        "cost": 11196.0,
+        "value": 11166.0,
+        "profit": -30.0,
+        "profit_pct": -0.2679528403001072
+      },
+      {
+        "code": "600036",
+        "name": "招商银行",
+        "type": "stock",
+        "cost_price": 39.27,
+        "current_price": 39.29,
+        "amount": 300,
+        "cost": 11781.000000000002,
+        "value": 11787.0,
+        "profit": 5.999999999998181,
+        "profit_pct": 0.05092946269415313
+      },
+      {
+        "code": "601318",
+        "name": "中国平安",
+        "type": "stock",
+        "cost_price": 58.36,
+        "current_price": 58.79,
+        "amount": 200,
+        "cost": 11672.0,
+        "value": 11758.0,
+        "profit": 86.0,
+        "profit_pct": 0.7368060315284441
+      },
+      {
+        "code": "600030",
+        "name": "中信证券",
+        "type": "stock",
+        "cost_price": 24.28,
+        "current_price": 24.13,
+        "amount": 300,
+        "cost": 7284.0,
+        "value": 7239.0,
+        "profit": -45.0,
+        "profit_pct": -0.6177924217462932
+      },
+      {
+        "code": "600887",
+        "name": "伊利股份",
+        "type": "stock",
+        "cost_price": 26.04,
+        "current_price": 26.1,
+        "amount": 100,
+        "cost": 2604.0,
+        "value": 2610.0,
+        "profit": 6.0,
+        "profit_pct": 0.2304147465437788
+      }
+    ],
+    "update_time": "2026-04-09T14:49:15.044630"
+  },
+  "signals": {
+    "buy": [
+      {
+        "code": "000858",
+        "name": "五 粮 液",
+        "pe": 14.01,
+        "price": 102.64,
+        "reason": "PE(14.0)偏低，建议买入"
+      },
+      {
+        "code": "000333",
+        "name": "美的集团",
+        "pe": 13.24,
+        "price": 76.53,
+        "reason": "PE(13.2)偏低，建议买入"
+      }
+    ],
+    "sell": [],
+    "hold": []
+  }
+}
