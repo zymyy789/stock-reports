@@ -1,0 +1,44 @@
+# 股票基金分析系统 - 每日自动报告
+name: Daily Stock Report
+
+on:
+  schedule:
+    # 每天早上10点 UTC = 下午6点 北京时间
+    - cron: '0 10 * * *'
+  workflow_dispatch:  # 可以手动触发
+  push:
+    branches: [main]
+
+# 授予写入权限
+permissions:
+  contents: write
+
+jobs:
+  daily-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run analysis
+        run: python main.py
+      
+      - name: Commit and push report
+        run: |
+          git config user.name "Stock Bot"
+          git config user.email "bot@stock.local"
+          # 添加报告并提交
+          git add reports/
+          git commit -m "Update daily report $(date +%Y-%m-%d)" || echo "No changes to commit"
+          # 使用 force push 确保成功
+          git push --force-with-lease || git push --force || echo "Push skipped"
