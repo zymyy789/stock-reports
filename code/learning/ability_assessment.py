@@ -1,0 +1,221 @@
+# -*- coding: utf-8 -*-
+"""
+AI投资能力评估标准与提升计划
+"""
+import sys, json, os
+sys.stdout.reconfigure(encoding='utf-8')
+
+KB_DIR = r'C:\Users\zymyy\.qclaw\workspace\stock_work\learning\knowledge_base'
+
+# ============================================================
+# 评估标准：5个Level，21项能力
+# ============================================================
+ABILITY_LEVELS = {
+    "L1_门外汉": "只会看价格涨跌，不懂任何分析",
+    "L2_新手": "知道PE/PB名词，但不会用",
+    "L3_入门": "能用基础指标做简单判断",
+    "L4_进阶": "综合多维度分析，有自己的体系",
+    "L5_专家": "能发现机会，能预警风险，有实战验证"
+}
+
+ASSESSMENT_CRITERIA = {
+    "1_数据获取": {
+        "L1": "只能看股票价格",
+        "L2": "能获取PE/PB/股息等基础数据",
+        "L3": "能获取机构评级/目标价/资金流向",
+        "L4": "能获取财报/研报/行业数据",
+        "L5": "能多源交叉验证，数据质量评估"
+    },
+    "2_估值能力": {
+        "L1": "不懂估值",
+        "L2": "知道PE/PB概念",
+        "L3": "会用PE/PB/PEG做简单判断",
+        "L4": "会用历史百分位 + 多指标综合估值",
+        "L5": "能DCF估值 + 理解行业特性 + 预测准确"
+    },
+    "3_基本面分析": {
+        "L1": "不会看财报",
+        "L2": "知道财报有三张表",
+        "L3": "能读懂主要科目（营收/利润/负债）",
+        "L4": "能用杜邦分析 + 识别财报异常",
+        "L5": "能发现造假信号 + 评估护城河"
+    },
+    "4_行业理解": {
+        "L1": "分不清行业",
+        "L2": "知道银行业/制造业等大分类",
+        "L3": "了解主要行业特点",
+        "L4": "理解行业周期 + 竞争格局 + 政策影响",
+        "L5": "能预判行业趋势 + 识别行业拐点"
+    },
+    "5_技术分析": {
+        "L1": "完全不懂",
+        "L2": "知道K线/均线",
+        "L3": "会用MACD/RSI/KDJ",
+        "L4": "理解量价关系 + 形态识别",
+        "L5": "能结合多周期 + 识别主力意图"
+    },
+    "6_风险管理": {
+        "L1": "不知道什么是风险",
+        "L2": "知道不能满仓",
+        "L3": "知道止损/分散",
+        "L4": "有仓位管理体系 + 止损纪律",
+        "L5": "能构建最优组合 + 压力测试"
+    },
+    "7_决策执行": {
+        "L1": "凭感觉买卖",
+        "L2": "知道要低买高卖",
+        "L3": "有买入/卖出规则",
+        "L4": "规则清晰 + 能克服情绪",
+        "L5": "决策系统化 + 实战验证有效"
+    },
+    "8_知识积累": {
+        "L1": "不记录",
+        "L2": "偶尔记笔记",
+        "L3": "有笔记习惯",
+        "L4": "有结构化知识库",
+        "L5": "知识能复用 + 持续迭代"
+    }
+}
+
+# 我的当前水平
+MY_CURRENT_LEVEL = {
+    "date": "2026-04-09",
+    "overall": "L3_入门 (部分达到L4)",
+    "scores": {
+        "1_数据获取": "L4",
+        "2_估值能力": "L3+",
+        "3_基本面分析": "L2",
+        "4_行业理解": "L2",
+        "5_技术分析": "L2+",
+        "6_风险管理": "L3",
+        "7_决策执行": "L3",
+        "8_知识积累": "L4"
+    },
+    "notes": "数据获取和知识积累较强，但深度分析能力不足"
+}
+
+# 提升计划
+IMPROVEMENT_PLAN = {
+    "week1_数据与估值": {
+        "goal": "估值能力达到L4",
+        "tasks": [
+            {"task": "学习DCF现金流折现估值", "output": "能计算1只股票的内在价值", "verify": "给出招商银行的DCF估值结果"},
+            {"task": "学习历史百分位分析", "output": "能判断PE/PB所处历史区间", "verify": "给出兴业银行10年PE百分位"},
+            {"task": "学习PEG深入理解", "output": "能解释为何中信和平安用同一PE但估值不同", "verify": "给出2只股票的PEG对比分析"},
+            {"task": "学习行业差异化估值", "output": "理解银行/白酒/券商适用不同估值方法", "verify": "分别用PB/PE/PS给持仓股票估值"}
+        ]
+    },
+    "week2_基本面分析": {
+        "goal": "基本面分析从L2提升到L3+",
+        "tasks": [
+            {"task": "深度学习资产负债表", "output": "能判断兴业银行资产质量", "verify": "输出兴业银行不良率/拨备覆盖率分析"},
+            {"task": "深度学习利润表", "output": "能分析营收/净利增速趋势", "verify": "给出平安3年收入/利润增速"},
+            {"task": "杜邦分析法", "output": "能用ROE拆解分析公司盈利质量", "verify": "对比招行vs兴业的ROE构成"},
+            {"task": "识别财报异常", "output": "知道哪些信号需要警惕", "verify": "列出3个财报造假预警信号"}
+        ]
+    },
+    "week3_行业研究": {
+        "goal": "行业理解从L2提升到L3+",
+        "tasks": [
+            {"task": "银行业深度分析", "output": "理解净息差/不良率/资本充足率", "verify": "分析当前银行板块机会"},
+            {"task": "白酒行业分析", "output": "理解高端/次高端/中端逻辑", "verify": "对比茅五泸洋的品牌差异"},
+            {"task": "保险行业分析", "output": "理解EV/NBV/投资收益率", "verify": "分析平安vs太保的差异"},
+            {"task": "政策影响评估", "output": "能评估降息/降准对银行影响", "verify": "分析当前政策对持仓的影响"}
+        ]
+    },
+    "week4_技术分析": {
+        "goal": "技术分析从L2提升到L3+",
+        "tasks": [
+            {"task": "均线系统", "output": "会用MA5/20/60判断趋势", "verify": "给出持仓股票的趋势判断"},
+            {"task": "MACD实战", "output": "能识别金叉/死叉/背离", "verify": "分析兴业银行MACD信号"},
+            {"task": "量价关系", "output": "理解放量/缩量含义", "verify": "分析最近5日成交量"},
+            {"task": "综合技术信号", "output": "结合多个指标给出综合判断", "verify": "输出持仓股票技术分析报告"}
+        ]
+    },
+    "week5_风险管理": {
+        "goal": "风险管理达到L4",
+        "tasks": [
+            {"task": "仓位管理体系", "output": "建立最大回撤控制方案", "verify": "给出当前组合的风险评估"},
+            {"task": "止损纪律", "output": "制定明确的止损规则", "verify": "定义每只股票的止损线"},
+            {"task": "相关性分析", "output": "分析持仓之间的相关性", "verify": "给出组合分散度评分"},
+            {"task": "黑天鹅应对", "output": "保留现金/配置债券策略", "verify": "给出极端情况应对方案"}
+        ]
+    },
+    "week6_整合验证": {
+        "goal": "决策执行达到L4，实战验证",
+        "tasks": [
+            {"task": "建立完整投资体系", "output": "输出完整的股票分析体系文档", "verify": "文档包含所有分析维度"},
+            {"task": "持仓深度分析", "output": "用新体系重新分析持仓", "verify": "给出每只股票的详细分析报告"},
+            {"task": "回测验证", "output": "用历史数据验证策略", "verify": "给出策略胜率/盈亏比估算"},
+            {"task": "持续改进机制", "output": "建立决策记录与复盘机制", "verify": "记录最近3次决策及结果"}
+        ]
+    }
+}
+
+
+def print_assessment():
+    """打印完整评估报告"""
+    print("\n" + "="*70)
+    print("📊 AI投资能力评估标准与提升计划")
+    print("="*70)
+    
+    print("\n【评估标准 - 5个Level】")
+    for level, desc in ABILITY_LEVELS.items():
+        print(f"  {level}: {desc}")
+    
+    print("\n【21项能力评估】")
+    print("-"*70)
+    for ability, levels in ASSESSMENT_CRITERIA.items():
+        current = MY_CURRENT_LEVEL["scores"].get(ability, "L2")
+        print(f"\n  {ability}")
+        for i in range(1, 6):
+            l = f"L{i}"
+            mark = "→" if l == current else "  "
+            print(f"    {mark} {l}: {levels.get(l, '')}")
+    
+    print("\n" + "="*70)
+    print("【我的当前水平】")
+    print("="*70)
+    print(f"\n总体水平: {MY_CURRENT_LEVEL['overall']}")
+    print(f"评估日期: {MY_CURRENT_LEVEL['date']}")
+    print(f"说明: {MY_CURRENT_LEVEL['notes']}")
+    
+    print("\n各项得分:")
+    for ability, level in MY_CURRENT_LEVEL["scores"].items():
+        print(f"  {ability}: {level}")
+    
+    print("\n" + "="*70)
+    print("【6周提升计划】")
+    print("="*70)
+    
+    total_tasks = 0
+    for week, info in IMPROVEMENT_PLAN.items():
+        print(f"\n📅 {week}: {info['goal']}")
+        print("-"*50)
+        for t in info['tasks']:
+            total_tasks += 1
+            print(f"  {total_tasks}. {t['task']}")
+            print(f"     输出: {t['output']}")
+            print(f"     验证: {t['verify']}")
+    
+    print(f"\n总计: {total_tasks}个任务，预计6周完成")
+    print("\n" + "="*70)
+    
+    # 保存到文件
+    report = {
+        "assessment_date": "2026-04-09",
+        "levels": ABILITY_LEVELS,
+        "criteria": ASSESSMENT_CRITERIA,
+        "my_level": MY_CURRENT_LEVEL,
+        "plan": IMPROVEMENT_PLAN
+    }
+    
+    filepath = os.path.join(KB_DIR, "assessment_report.json")
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+    
+    print(f"\n✅ 评估报告已保存: {filepath}")
+
+
+if __name__ == '__main__':
+    print_assessment()
